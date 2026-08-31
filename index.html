@@ -134,14 +134,19 @@
             </button>
         </div>
 
-        <div class="bg-slate-900 text-white p-3.5 sm:p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20">
-            <div class="flex items-center justify-between mb-1">
-                <span class="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Note:</span>
-                <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Violations Found: 0 / 3</span>
+        <div class="bg-slate-900 text-white p-3 sm:p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20 flex flex-col sm:flex-row items-center gap-3.5">
+            <div class="w-full sm:w-44 h-24 shrink-0 rounded-lg overflow-hidden border border-slate-600 shadow-inner bg-slate-800">
+                <img src="pre_2025_missing_note_banner.jpeg" alt="Handwritten Pre-2025 Consultation Note" class="w-full h-full object-cover">
             </div>
-            <p class="font-serif italic text-base sm:text-lg text-slate-100 border-l-2 border-[#FE5000] pl-3 py-0.5">
-                "Patient examined. Chaperone present."
-            </p>
+            <div class="flex-1 w-full text-left">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400">Clinical Exhibit &bull; Pre-2025 Legacy Note:</span>
+                    <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Violations Found: 0 / 3</span>
+                </div>
+                <p class="font-serif italic text-base sm:text-lg text-slate-100 border-l-2 border-[#FE5000] pl-3 py-0.5">
+                    "Patient examined. Chaperone present."
+                </p>
+            </div>
         </div>
 
         <p class="text-xs sm:text-sm font-semibold text-[#0C2340] font-heading mb-2 relative z-20">
@@ -157,7 +162,7 @@
             <div>
                 <p class="font-bold text-emerald-900 font-heading">All 3 Critical Audit Gaps Identified!</p>
                 <p class="text-emerald-800 leading-snug mt-0.5">
-                    Writing just <em>"Chaperone present"</em> exposes the practice to serious medicolegal and CQC risk. Now proceed to explore the <strong>Golden Record Standard</strong>.
+                    [cite_start]Writing just <em>"Chaperone present"</em> exposes the practice to serious medicolegal and CQC risk [cite: 154-159, 245-252]. [cite_start]Now proceed to explore the <strong>Golden Record Standard</strong> [cite: 168, 208-209].
                 </p>
             </div>
         </div>
@@ -200,7 +205,6 @@
             }
         ];
 
-        // Fisher-Yates Shuffle
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
