@@ -128,63 +128,63 @@
 
         <div class="bg-slate-900 text-white p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20">
             <div class="flex items-center justify-between mb-1.5">
-                [cite_start]<span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Entry Under Review[cite: 153]:</span>
+                <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Entry Under Review:</span>
                 <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Missing Gaps Found: 0 / 5</span>
             </div>
             <p class="font-serif italic text-base sm:text-lg text-slate-100 border-l-2 border-[#FE5000] pl-3 py-0.5">
-                [cite_start]"Patient examined. Chaperone present." [cite: 152]
+                "Patient examined. Chaperone present."
             </p>
         </div>
 
         <p class="text-xs sm:text-sm font-semibold text-[#0C2340] font-heading mb-2 relative z-20">
-            [cite_start]Tap the 5 missing clinical and legal details this note fails to provide [cite: 154-159]:
+            Tap the 5 missing clinical and legal details this note fails to provide:
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 relative z-20 mb-3">
             
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 1)">
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
                 <div class="flex items-center space-x-2.5">
                     <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Why the examination was needed (Clinical Indication) [cite: 154, 193]</span>
+                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Why the examination was needed (Clinical Indication)</span>
                 </div>
             </div>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 2)">
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
                 <div class="flex items-center space-x-2.5">
                     <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether a chaperone was proactively offered [cite: 155, 194]</span>
+                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether a chaperone was proactively offered</span>
                 </div>
             </div>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 3)">
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
                 <div class="flex items-center space-x-2.5">
                     <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether the patient accepted, declined, or requested preferences [cite: 156, 195-196]</span>
+                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether the patient accepted, declined, or requested preferences</span>
                 </div>
             </div>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 4)">
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
                 <div class="flex items-center space-x-2.5">
                     <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Who the chaperone was (Full Name &amp; Staff Job Role) [cite: 157, 196]</span>
+                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Who the chaperone was (Full Name &amp; Staff Job Role)</span>
                 </div>
             </div>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between sm:col-span-2" onclick="toggleAudit(this, 5)">
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between sm:col-span-2" onclick="toggleAudit(this)">
                 <div class="flex items-center space-x-2.5">
                     <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Special circumstances, capacity, or adjustments applied [cite: 158, 196]</span>
+                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Special circumstances, capacity, or adjustments applied</span>
                 </div>
             </div>
 
         </div>
 
-        <div id="debriefBox" class="hidden p-3 bg-emerald-50 border border-emerald-300 rounded-xl relative z-20 text-xs sm:text-sm text-[#0C2340] flex items-start space-x-2.5 animate-fadeIn">
+        <div id="debriefBox" class="hidden p-3 bg-emerald-50 border border-emerald-300 rounded-xl relative z-20 text-xs sm:text-sm text-[#0C2340] flex items-start space-x-2.5">
             <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <div>
                 <p class="font-bold text-emerald-900 font-heading">Audit Vulnerability Confirmed!</p>
                 <p class="text-emerald-800 leading-snug mt-0.5">
-                    [cite_start]This brief note provides zero legal evidence of informed consent, active safeguarding, or identity [cite: 154-159, 165]. [cite_start]Next, let's explore how to fix it with the <strong>Golden Record Standard</strong> [cite: 168, 208-209].
+                    This brief note provides zero legal evidence of informed consent, active safeguarding, or identity. Next, let's explore how to fix it with the <strong>Golden Record Standard</strong>.
                 </p>
             </div>
         </div>
@@ -203,7 +203,7 @@
         const audioSwitch = document.getElementById('audioSwitch');
         const speakerIcon = document.getElementById('speakerIcon');
 
-        function toggleAudit(element, id) {
+        function toggleAudit(element) {
             if (element.classList.contains('flagged')) return;
 
             element.classList.add('flagged');
