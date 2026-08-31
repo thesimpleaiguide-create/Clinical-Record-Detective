@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Record Detective: The Missing Note</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
+
+        :root {
+            --ttn-navy: #0C2340;
+            --ttn-trust-blue: #005EB8;
+            --ttn-sky-cyan: #59CBE8;
+            --ttn-action-orange: #FE5000;
+            --ttn-slate: #333F48;
+            --ttn-ice-blue: #DBE2E9;
+            --ttn-success: #00BF6F;
+            --ttn-error: #D5281B;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Montserrat', sans-serif;
+            --radius-soft: 8px;
+            --radius-card: 14px;
+            --shadow-main: 0px 4px 14px rgba(12, 35, 64, 0.05);
+            --shadow-hover: 0px 6px 18px rgba(12, 35, 64, 0.08);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            font-family: var(--font-main);
+            color: var(--ttn-slate);
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: var(--font-heading);
+        }
+
+        .main-container {
+            width: 100%;
+            background-color: #FFFFFFEE;
+            border-radius: 1rem;
+            border: 1px solid #DBE2E9;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+            background-image: url('Watermark_Background.jpeg');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .audit-item {
+            background-color: #FFFFFF;
+            border: 1.5px solid var(--ttn-ice-blue);
+            border-left: 4.5px solid var(--ttn-trust-blue);
+            border-radius: var(--radius-card);
+            transition: all 180ms ease-in-out;
+            cursor: pointer;
+        }
+
+        .audit-item:hover {
+            transform: translateY(-1px);
+            border-color: #bfdbfe;
+        }
+
+        .audit-item.flagged {
+            border-left-color: var(--ttn-success);
+            background-color: #F0FDF4;
+            border-color: #86EFAC;
+        }
+
+        .toggle-switch {
+            width: 34px;
+            height: 18px;
+            background-color: var(--ttn-ice-blue);
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 180ms ease-in-out;
+        }
+        .toggle-switch.active {
+            background-color: var(--ttn-success);
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            transition: transform 180ms ease-in-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active::after {
+            transform: translateX(16px);
+        }
+    </style>
+</head>
+<body class="p-1 sm:p-2 flex items-start justify-center w-full box-border">
+
+    <div class="main-container p-3 sm:p-5">
+        
+        <div class="flex items-center justify-between mb-3 w-full relative z-20">
+            <span class="inline-flex items-center space-x-1.5 text-xs font-bold text-[#005EB8] bg-[#DBE2E9] px-3 py-1.5 rounded-[4px] font-heading uppercase tracking-wider">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Interactive Audit &bull; Case Inspection</span>
+            </span>
+
+            <button id="audioToggleBtn" type="button" class="flex items-center space-x-2 cursor-pointer bg-white px-3 py-1.5 rounded-full border border-[#DBE2E9] shadow-sm hover:border-slate-300 transition-all focus:outline-none">
+                <svg id="speakerIcon" class="w-3.5 h-3.5 text-[#005EB8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                <span class="text-xs font-semibold text-[#0C2340] font-heading">Dr. Lindsay Debrief</span>
+                <div id="audioSwitch" class="toggle-switch"></div>
+            </button>
+        </div>
+
+        <div class="bg-slate-900 text-white p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20">
+            <div class="flex items-center justify-between mb-1.5">
+                [cite_start]<span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Entry Under Review[cite: 153]:</span>
+                <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Missing Gaps Found: 0 / 5</span>
+            </div>
+            <p class="font-serif italic text-base sm:text-lg text-slate-100 border-l-2 border-[#FE5000] pl-3 py-0.5">
+                [cite_start]"Patient examined. Chaperone present." [cite: 152]
+            </p>
+        </div>
+
+        <p class="text-xs sm:text-sm font-semibold text-[#0C2340] font-heading mb-2 relative z-20">
+            [cite_start]Tap the 5 missing clinical and legal details this note fails to provide [cite: 154-159]:
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 relative z-20 mb-3">
+            
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 1)">
+                <div class="flex items-center space-x-2.5">
+                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
+                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Why the examination was needed (Clinical Indication) [cite: 154, 193]</span>
+                </div>
+            </div>
+
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 2)">
+                <div class="flex items-center space-x-2.5">
+                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
+                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether a chaperone was proactively offered [cite: 155, 194]</span>
+                </div>
+            </div>
+
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 3)">
+                <div class="flex items-center space-x-2.5">
+                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
+                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether the patient accepted, declined, or requested preferences [cite: 156, 195-196]</span>
+                </div>
+            </div>
+
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this, 4)">
+                <div class="flex items-center space-x-2.5">
+                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
+                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Who the chaperone was (Full Name &amp; Staff Job Role) [cite: 157, 196]</span>
+                </div>
+            </div>
+
+            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between sm:col-span-2" onclick="toggleAudit(this, 5)">
+                <div class="flex items-center space-x-2.5">
+                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
+                    [cite_start]<span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Special circumstances, capacity, or adjustments applied [cite: 158, 196]</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="debriefBox" class="hidden p-3 bg-emerald-50 border border-emerald-300 rounded-xl relative z-20 text-xs sm:text-sm text-[#0C2340] flex items-start space-x-2.5 animate-fadeIn">
+            <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div>
+                <p class="font-bold text-emerald-900 font-heading">Audit Vulnerability Confirmed!</p>
+                <p class="text-emerald-800 leading-snug mt-0.5">
+                    [cite_start]This brief note provides zero legal evidence of informed consent, active safeguarding, or identity [cite: 154-159, 165]. [cite_start]Next, let's explore how to fix it with the <strong>Golden Record Standard</strong> [cite: 168, 208-209].
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="audioDebrief" src="L3_Quiz_Detective_Debrief.wav" preload="auto"></audio>
+
+    <script>
+        let foundCount = 0;
+        const totalItems = 5;
+        const scoreTracker = document.getElementById('scoreTracker');
+        const debriefBox = document.getElementById('debriefBox');
+        const audioDebrief = document.getElementById('audioDebrief');
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+        const audioSwitch = document.getElementById('audioSwitch');
+        const speakerIcon = document.getElementById('speakerIcon');
+
+        function toggleAudit(element, id) {
+            if (element.classList.contains('flagged')) return;
+
+            element.classList.add('flagged');
+            const icon = element.querySelector('.status-icon');
+            icon.textContent = '✓';
+            icon.className = 'status-icon w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0';
+
+            foundCount++;
+            scoreTracker.textContent = `Missing Gaps Found: ${foundCount} / ${totalItems}`;
+
+            if (foundCount === totalItems) {
+                debriefBox.classList.remove('hidden');
+                playAudio();
+            }
+        }
+
+        let isPlaying = false;
+        function playAudio() {
+            audioDebrief.currentTime = 0;
+            audioDebrief.play().then(() => {
+                isPlaying = true;
+                audioSwitch.classList.add('active');
+                speakerIcon.classList.add('text-[#00BF6F]');
+                speakerIcon.classList.remove('text-[#005EB8]');
+            }).catch(e => console.log('Audio autoplay prevented:', e));
+        }
+
+        function stopAudio() {
+            audioDebrief.pause();
+            audioDebrief.currentTime = 0;
+            isPlaying = false;
+            audioSwitch.classList.remove('active');
+            speakerIcon.classList.remove('text-[#00BF6F]');
+            speakerIcon.classList.add('text-[#005EB8]');
+        }
+
+        audioToggleBtn.addEventListener('click', () => {
+            isPlaying ? stopAudio() : playAudio();
+        });
+
+        audioDebrief.addEventListener('ended', stopAudio);
+    </script>
+</body>
+</html>
