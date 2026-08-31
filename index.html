@@ -148,51 +148,7 @@
             Identify the <strong class="text-[#FE5000]">3 genuine audit failures</strong> in this entry (avoid the red herrings):
         </p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 relative z-20 mb-3">
-            
-            <button onclick="handleCheck(this, true, 'Correct! No clinical reason or indication is documented for why this intimate examination was necessary.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">A</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to record why the examination was needed (Clinical Indication)</p>
-                </div>
-            </button>
-
-            <button onclick="handleCheck(this, false, 'Incorrect. NHS appointment billing codes and finance reference numbers do not belong in the clinical chaperone entry.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">B</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the practice NHS billing reference and tariff code</p>
-                </div>
-            </button>
-
-            <button onclick="handleCheck(this, true, 'Correct! The entry provides zero evidence that a chaperone was offered at booking or reconfirmed prior to examination.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">C</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to evidence the proactive offer and the patient\'s decision</p>
-                </div>
-            </button>
-
-            <button onclick="handleCheck(this, false, 'Incorrect. The patient\'s full home address and emergency next-of-kin are kept in registration demographics, not in the chaperone consultation entry.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">D</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the patient\'s next-of-kin and emergency contact details</p>
-                </div>
-            </button>
-
-            <button onclick="handleCheck(this, true, 'Correct! Writing \'Chaperone present\' fails to identify the individual by full name and job role.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">E</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to record the full name and job role of the chaperone</p>
-                </div>
-            </button>
-
-            <button onclick="handleCheck(this, false, 'Incorrect. The clinician\'s personal GMC/NMC number is logged automatically by the EHR login and is not a missing chaperone requirement.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
-                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">F</span>
-                <div>
-                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the examining doctor\'s GMC registration PIN</p>
-                </div>
-            </button>
-
-        </div>
+        <div id="optionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 relative z-20 mb-3"></div>
 
         <div id="feedbackBanner" class="hidden p-3 rounded-xl relative z-20 text-xs sm:text-sm leading-snug mb-2 transition-all"></div>
 
@@ -211,6 +167,65 @@
     <audio id="audioDebrief" src="L3_Quiz_Detective_Debrief.wav" preload="auto"></audio>
 
     <script>
+        const rawOptions = [
+            {
+                text: "Fails to record why the examination was needed (Clinical Indication)",
+                isCorrect: true,
+                message: "No clinical reason or indication is documented for why this intimate examination was necessary."
+            },
+            {
+                text: "Omits the practice NHS billing reference and tariff code",
+                isCorrect: false,
+                message: "NHS appointment billing codes and finance reference numbers do not belong in the clinical chaperone entry."
+            },
+            {
+                text: "Fails to evidence the proactive offer and the patient's decision",
+                isCorrect: true,
+                message: "The entry provides zero evidence that a chaperone was offered at booking or reconfirmed prior to examination."
+            },
+            {
+                text: "Omits the patient's next-of-kin and emergency contact details",
+                isCorrect: false,
+                message: "The patient's full home address and emergency next-of-kin are kept in registration demographics, not in the chaperone consultation entry."
+            },
+            {
+                text: "Fails to record the full name and job role of the chaperone",
+                isCorrect: true,
+                message: "Writing 'Chaperone present' fails to identify the individual by full name and job role."
+            },
+            {
+                text: "Omits the examining doctor's GMC registration PIN",
+                isCorrect: false,
+                message: "The clinician's personal GMC/NMC number is logged automatically by the EHR login and is not a missing chaperone requirement."
+            }
+        ];
+
+        // Fisher-Yates Shuffle
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+        const shuffledOptions = shuffle([...rawOptions]);
+        const grid = document.getElementById('optionsGrid');
+
+        shuffledOptions.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-card p-2.5 sm:p-3 flex items-start space-x-2.5';
+            btn.onclick = () => handleCheck(btn, opt.isCorrect, opt.message);
+            btn.innerHTML = `
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">${opt.text}</p>
+                </div>
+            `;
+            grid.appendChild(btn);
+        });
+
         let correctFound = 0;
         const totalCorrect = 3;
         const scoreTracker = document.getElementById('scoreTracker');
