@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Record Detective: The Missing Note</title>
+    <title>Clinical Record Audit Challenge</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
@@ -60,24 +60,32 @@
             background-repeat: no-repeat;
         }
 
-        .audit-item {
+        .option-card {
             background-color: #FFFFFF;
             border: 1.5px solid var(--ttn-ice-blue);
-            border-left: 4.5px solid var(--ttn-trust-blue);
+            border-left: 4px solid var(--ttn-trust-blue);
             border-radius: var(--radius-card);
             transition: all 180ms ease-in-out;
             cursor: pointer;
+            text-align: left;
         }
 
-        .audit-item:hover {
+        .option-card:hover:not(.locked) {
             transform: translateY(-1px);
             border-color: #bfdbfe;
         }
 
-        .audit-item.flagged {
-            border-left-color: var(--ttn-success);
-            background-color: #F0FDF4;
-            border-color: #86EFAC;
+        .option-card.correct {
+            border-left-color: var(--ttn-success) !important;
+            background-color: #F0FDF4 !important;
+            border-color: #86EFAC !important;
+            cursor: default;
+        }
+
+        .option-card.incorrect {
+            border-left-color: var(--ttn-error) !important;
+            background-color: #FEF2F2 !important;
+            border-color: #FCA5A5 !important;
         }
 
         .toggle-switch {
@@ -116,7 +124,7 @@
         <div class="flex items-center justify-between mb-3 w-full relative z-20">
             <span class="inline-flex items-center space-x-1.5 text-xs font-bold text-[#005EB8] bg-[#DBE2E9] px-3 py-1.5 rounded-[4px] font-heading uppercase tracking-wider">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>Interactive Audit &bull; Case Inspection</span>
+                <span>Audit Challenge &bull; Spot the Violations</span>
             </span>
 
             <button id="audioToggleBtn" type="button" class="flex items-center space-x-2 cursor-pointer bg-white px-3 py-1.5 rounded-full border border-[#DBE2E9] shadow-sm hover:border-slate-300 transition-all focus:outline-none">
@@ -126,10 +134,10 @@
             </button>
         </div>
 
-        <div class="bg-slate-900 text-white p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Entry Under Review:</span>
-                <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Missing Gaps Found: 0 / 5</span>
+        <div class="bg-slate-900 text-white p-3.5 sm:p-4 rounded-xl mb-3 shadow-md border border-slate-700 relative z-20">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400">EHR Consultation Note:</span>
+                <span id="scoreTracker" class="text-xs font-bold text-[#59CBE8] font-heading">Violations Found: 0 / 3</span>
             </div>
             <p class="font-serif italic text-base sm:text-lg text-slate-100 border-l-2 border-[#FE5000] pl-3 py-0.5">
                 "Patient examined. Chaperone present."
@@ -137,54 +145,63 @@
         </div>
 
         <p class="text-xs sm:text-sm font-semibold text-[#0C2340] font-heading mb-2 relative z-20">
-            Tap the 5 missing clinical and legal details this note fails to provide:
+            Identify the <strong class="text-[#FE5000]">3 genuine audit failures</strong> in this entry (avoid the red herrings):
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 relative z-20 mb-3">
             
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
-                <div class="flex items-center space-x-2.5">
-                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Why the examination was needed (Clinical Indication)</span>
+            <button onclick="handleCheck(this, true, 'Correct! No clinical reason or indication is documented for why this intimate examination was necessary.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">A</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to record why the examination was needed (Clinical Indication)</p>
                 </div>
-            </div>
+            </button>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
-                <div class="flex items-center space-x-2.5">
-                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether a chaperone was proactively offered</span>
+            <button onclick="handleCheck(this, false, 'Incorrect. NHS appointment billing codes and finance reference numbers do not belong in the clinical chaperone entry.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">B</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the practice NHS billing reference and tariff code</p>
                 </div>
-            </div>
+            </button>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
-                <div class="flex items-center space-x-2.5">
-                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Whether the patient accepted, declined, or requested preferences</span>
+            <button onclick="handleCheck(this, true, 'Correct! The entry provides zero evidence that a chaperone was offered at booking or reconfirmed prior to examination.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">C</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to evidence the proactive offer and the patient\'s decision</p>
                 </div>
-            </div>
+            </button>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between" onclick="toggleAudit(this)">
-                <div class="flex items-center space-x-2.5">
-                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Who the chaperone was (Full Name &amp; Staff Job Role)</span>
+            <button onclick="handleCheck(this, false, 'Incorrect. The patient\'s full home address and emergency next-of-kin are kept in registration demographics, not in the chaperone consultation entry.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">D</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the patient\'s next-of-kin and emergency contact details</p>
                 </div>
-            </div>
+            </button>
 
-            <div class="audit-item p-2.5 sm:p-3 flex items-center justify-between sm:col-span-2" onclick="toggleAudit(this)">
-                <div class="flex items-center space-x-2.5">
-                    <span class="status-icon w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0">?</span>
-                    <span class="text-xs sm:text-sm font-semibold text-[#0C2340]">Special circumstances, capacity, or adjustments applied</span>
+            <button onclick="handleCheck(this, true, 'Correct! Writing \'Chaperone present\' fails to identify the individual by full name and job role.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">E</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Fails to record the full name and job role of the chaperone</p>
                 </div>
-            </div>
+            </button>
+
+            <button onclick="handleCheck(this, false, 'Incorrect. The clinician\'s personal GMC/NMC number is logged automatically by the EHR login and is not a missing chaperone requirement.')" class="option-card p-2.5 sm:p-3 flex items-start space-x-2.5">
+                <span class="badge w-5 h-5 rounded-full bg-[#DBE2E9] text-[#005EB8] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">F</span>
+                <div>
+                    <p class="text-xs sm:text-sm font-semibold text-[#0C2340] leading-snug">Omits the examining doctor\'s GMC registration PIN</p>
+                </div>
+            </button>
 
         </div>
+
+        <div id="feedbackBanner" class="hidden p-3 rounded-xl relative z-20 text-xs sm:text-sm leading-snug mb-2 transition-all"></div>
 
         <div id="debriefBox" class="hidden p-3 bg-emerald-50 border border-emerald-300 rounded-xl relative z-20 text-xs sm:text-sm text-[#0C2340] flex items-start space-x-2.5">
             <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <div>
-                <p class="font-bold text-emerald-900 font-heading">Audit Vulnerability Confirmed!</p>
+                <p class="font-bold text-emerald-900 font-heading">All 3 Critical Audit Gaps Identified!</p>
                 <p class="text-emerald-800 leading-snug mt-0.5">
-                    This brief note provides zero legal evidence of informed consent, active safeguarding, or identity. Next, let's explore how to fix it with the <strong>Golden Record Standard</strong>.
+                    [cite_start]Writing just <em>"Chaperone present"</em> exposes the practice to serious medicolegal and CQC risk [cite: 154-159, 245-252]. [cite_start]Now proceed to explore the <strong>Golden Record Standard</strong> [cite: 168, 208-209].
                 </p>
             </div>
         </div>
@@ -194,29 +211,47 @@
     <audio id="audioDebrief" src="L3_Quiz_Detective_Debrief.wav" preload="auto"></audio>
 
     <script>
-        let foundCount = 0;
-        const totalItems = 5;
+        let correctFound = 0;
+        const totalCorrect = 3;
         const scoreTracker = document.getElementById('scoreTracker');
+        const feedbackBanner = document.getElementById('feedbackBanner');
         const debriefBox = document.getElementById('debriefBox');
         const audioDebrief = document.getElementById('audioDebrief');
         const audioToggleBtn = document.getElementById('audioToggleBtn');
         const audioSwitch = document.getElementById('audioSwitch');
         const speakerIcon = document.getElementById('speakerIcon');
 
-        function toggleAudit(element) {
-            if (element.classList.contains('flagged')) return;
+        function handleCheck(btn, isCorrect, message) {
+            if (btn.classList.contains('locked')) return;
 
-            element.classList.add('flagged');
-            const icon = element.querySelector('.status-icon');
-            icon.textContent = '✓';
-            icon.className = 'status-icon w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0';
+            feedbackBanner.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+            feedbackBanner.classList.add('border');
 
-            foundCount++;
-            scoreTracker.textContent = `Missing Gaps Found: ${foundCount} / ${totalItems}`;
+            if (isCorrect) {
+                btn.classList.add('correct', 'locked');
+                const badge = btn.querySelector('.badge');
+                badge.textContent = '✓';
+                badge.className = 'badge w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5';
 
-            if (foundCount === totalItems) {
-                debriefBox.classList.remove('hidden');
-                playAudio();
+                feedbackBanner.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+                feedbackBanner.innerHTML = `<strong>Correct:</strong> ${message}`;
+
+                correctFound++;
+                scoreTracker.textContent = `Violations Found: ${correctFound} / ${totalCorrect}`;
+
+                if (correctFound === totalCorrect) {
+                    debriefBox.classList.remove('hidden');
+                    feedbackBanner.classList.add('hidden');
+                    playAudio();
+                }
+            } else {
+                btn.classList.add('incorrect');
+                const badge = btn.querySelector('.badge');
+                badge.textContent = '✗';
+                badge.className = 'badge w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5';
+
+                feedbackBanner.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
+                feedbackBanner.innerHTML = `<strong>Practice Trap:</strong> ${message}`;
             }
         }
 
